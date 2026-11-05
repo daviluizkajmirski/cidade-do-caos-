@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-========== LEIA-ME — CIDADE DO CAOS ==========
-# 🌆 Cidade do Caos
+========== LEIA-ME — CIDADE DO CAOS v3.4.0 ==========
+# 🌆 Cidade do Caos — versão 3.4.0
 
 Open world no navegador, estilo GTA — Brasil + cidades clássicas.
 
@@ -44,27 +44,13 @@ Tecla M — cidades e GPS.
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#050a12">
-<title>Cidade do Caos · Melhorado</title>
+<title>Cidade do Caos v3.4.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <script>
-window.addEventListener('error', function(e){
-  var el = document.createElement('div');
-  el.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#1a0505;color:#ffb4b4;font-family:monospace;font-size:13px;padding:20px;overflow:auto;white-space:pre-wrap;line-height:1.5;';
-  var msg = (e && e.message) ? e.message : String(e);
-  var loc = (e && e.filename) ? ('\n\nArquivo: ' + e.filename + '\nLinha: ' + e.lineno + ', coluna: ' + e.colno) : '';
-  var stack = (e && e.error && e.error.stack) ? ('\n\nStack:\n' + e.error.stack) : '';
-  el.textContent = 'ERRO NO JOGO — copie e envie este texto:\n\n' + msg + loc + stack;
-  document.body.appendChild(el);
-});
-window.addEventListener('unhandledrejection', function(e){
-  var el = document.createElement('div');
-  el.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#1a0505;color:#ffb4b4;font-family:monospace;font-size:13px;padding:20px;overflow:auto;white-space:pre-wrap;line-height:1.5;';
-  var msg = (e && e.reason) ? (e.reason.message || String(e.reason)) : 'Promise rejeitada';
-  var stack = (e && e.reason && e.reason.stack) ? ('\n\nStack:\n' + e.reason.stack) : '';
-  el.textContent = 'ERRO NO JOGO (async) — copie e envie:\n\n' + msg + stack;
-  document.body.appendChild(el);
-});
+window.CDC_VERSION = "3.4.0";
+window.addEventListener('error', function(e){ try{ console.warn('[CDC 1.0.0]', e && e.message); }catch(_){} });
+window.addEventListener('unhandledrejection', function(e){ try{ console.warn('[CDC 1.0.0 async]', e && e.reason); }catch(_){} });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -107,6 +93,7 @@ window.addEventListener('unhandledrejection', function(e){
   }
   .hud-panel.small{ padding:5px 11px; font-size:12.5px; }
   .hud-panel .sub{ display:block; font-size:11px; opacity:0.75; font-weight:500; margin-top:2px; letter-spacing:0.3px;}
+  #cdc-ver{ position:fixed; bottom:4px; left:8px; z-index:6; font-size:10px; opacity:0.35; color:#ffcf40; pointer-events:none; letter-spacing:0.08em; }
   #stars{ font-size:19px; letter-spacing:3px; color:#ffcf40; transition:box-shadow .2s, border-color .2s; }
   #stars.wanted-active{ animation: policeLights 1s infinite; border-color:transparent; }
   @keyframes policeLights{
@@ -882,6 +869,7 @@ window.addEventListener('unhandledrejection', function(e){
 </head>
 <body>
 <canvas id="game"></canvas>
+<div id="cdc-ver">CDC v3.4.0</div>
 <div id="posterScreen">
   <div class="poster-stars"></div>
   <div class="poster-rays"></div>
@@ -894,7 +882,7 @@ window.addEventListener('unhandledrejection', function(e){
   <div class="poster-skyline-back"></div>
   <div class="poster-skyline"></div>
   <div class="poster-vignette"></div>
-  <h1 class="poster-title" data-text="CIDADE DO CAOS">CIDADE DO CAOS</h1>
+  <h1 class="poster-title" data-text="CIDADE DO CAOS">CIDADE DO CAOS <small style="font-size:0.45em;opacity:0.75;">v1.0.0</small></h1>
   <div class="poster-divider"></div>
   <div class="poster-tagline">OPEN WORLD · BRASIL</div>
   <div class="poster-tap">TOQUE PARA COMEÇAR<span class="poster-chevron">▾</span></div>
@@ -1033,7 +1021,7 @@ window.addEventListener('unhandledrejection', function(e){
   </div>
 </div>
 
-<div class="overlay" id="loadingScreen">
+<div class="overlay" id="loadingScreen" style="display:none;">
   <h1 style="font-size:clamp(30px,9vw,46px);">CIDADE DO CAOS</h1>
   <p style="opacity:0.7;font-size:13px;margin-top:8px;">Carregando cidade e personagens 3D…</p>
   <div class="spinner"></div>
@@ -1086,11 +1074,18 @@ window.addEventListener('unhandledrejection', function(e){
     <p>A pé na porta + <b>GÁS/E</b>: Bar do Zé, mercado, restaurante, Ammu, banco, hospital, hotel, cassino. <b>ESC</b> sai.</p>
     <h3>Polícia</h3>
     <p>Estrelas de procurado · PM, Rota, BOPE e moto.</p>
+    <h3>📱 QR no celular</h3>
+    <p>Publique o jogo no <b>GitHub Pages</b>, depois abra <b>gerar-qr.html</b> e cole a URL. Escaneie com a câmera.</p>
+    <div id="qrLiveBox" style="text-align:center;margin:12px 0;">
+        <div id="qrCanvasHost" style="display:none;background:#fff;padding:12px;border-radius:12px;min-width:200px;min-height:200px;"></div>
+        <img id="qrFallbackImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAIAAAD2HxkiAAAF7ElEQVR4nO3dQY7jOBAAQfdi/v/l2cPeaSyFUlLqiOtgLNvtBA8skD9///79AJ1/6jcAv50IISZCiIkQYiKEmAghJkKIiRBiIoTYn/U///z83PM+pm0PBq2/gaF5o+Sh27Z/JOsP8prf3ufbJ7USQkyEEBMhxEQIMRFCTIQQEyHERAixL5v1C6/ZMr74fydeNtnF3v6DPuvdDrnyMa2EEBMhxEQIMRFCTIQQEyHERAgxEUJMhBDbn5hZe9acxOJl1x9kaCbmNFeO27j/kz7rt/exEkJOhBATIcRECDERQkyEEBMhxEQIsanN+mc57RyKZLt58dArH/NZYwkJKyHERAgxEUJMhBATIcRECDERQkyEEBMhxEzMfD4Xpjq2h0WSKZNkgmd7EOf3sBJCTIQQEyHERAgxEUJMhBATIcRECDERQmxqYuZZwxD3T3Vcedn7b6G5Mt8zdF7OwrN+ex8rIeRECDERQkyEEBMhxEQIMRFCTIQQ29+sv38T9k2Gjrf4PTe3vOnnZyWEmAghJkKIiRBiIoSYCCEmQoiJEGIihNjPs+YkXmNoeOXKHMn29TUTT/xVrIQQEyHERAgxEUJMhBATIcRECDERQkyEEPtyxsxpJ3ncP9VxRTL4srB9As3QaMvQPTNDB+3MndBjJYSYCCEmQoiJEGIihJgIISZCiIkQYvvHWwxtem67skU79NBtyeEX948W+JP9x0oIMRFCTIQQEyHERAgxEUJMhBATIcRECLGpC2Fec1bCWjLzMeRZ17MM/ckSVkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiH25EGbhtHNQkkmIZG7jtGGR096PC2GA/0eEEBMhxEQIMRFCTIQQEyHERAix/c36taHjLd60L7z9H4cu2xn6kyXf/Lb7j2X5WAkhJ0KIiRBiIoSYCCEmQoiJEGIihJgIIfZlYmZigGDo5pYDr3wZGm3Ze+LXh97/btcOPIdi4cpDrYQQEyHERAgxEUJMhBATIcRECDERQkyEEPsZGnzZlgy+bDtwOGPhwKGi+192mzNm4LVECDERQkyEEBMhxEQIMRFCTIQQ+7JZP7El+qa93dPO+LjiWYdxDD10YW4ww0oIMRFCTIQQEyHERAgxEUJMhBATIcRECLEvF8JsGzoLYOgakKF7Zn7J0SFXHrr9H0+7GugKKyHERAgxEUJMhBATIcRECDERQkyEEBMhxPbPmDnwrI6Jh16ZI5mbsdhz/yUqawdO8CSzU1ZCiIkQYiKEmAghJkKIiRBiIoSYCCE2dbzFkPvPJriy4f5Lbm5Ze9YNP9tcCAMPJkKIiRBiIoSYCCEmQoiJEGIihJgIITY1MXPa6MZpcxsHzqBsP3H9sqed8bE2dOPQmpUQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGLHXQgzJJnbuP+TDg3iPOu4l7UDb6GxEkJMhBATIcRECDERQkyEEBMhxEQIsS+b9b/E0D51clbCQrITPTHvsXbg8IDNejiaCCEmQoiJEGIihJgIISZCiIkQYiKE2JcLYQ4cPthz2mDQgcMi2/M9Qz+SZKgoeaKVEGIihJgIISZCiIkQYiKEmAghJkKIiRBiXyZmFk6bQUmGRZLjVe4/teXAS1ROe9krrIQQEyHERAgxEUJMhBATIcRECDERQmx/s37tWRu4r7m0JBkt2H7ZAw9Puf9qoI+VEHIihJgIISZCiIkQYiKEmAghJkKIiRBiUxMzr3HgVMf2EM/2Zxm6myU5aWLoS7jCSggxEUJMhBATIcRECDERQkyEEBMhxEQIMRMzXxw41XH/EM+VL2H7sp1nufIVWQkhJkKIiRBiIoSYCCEmQoiJEGIihNjUZn2yxz1h6IqVtaGbW4ZOqUgu/7n/S3C8BbyWCCEmQoiJEGIihJgIISZCiIkQYiKE2P7EzJvOJhjymhmUuYdOvOyVD7I9iHOFlRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYj+vOQwGHspKCDERQkyEEBMhxEQIMRFCTIQQEyHERAixfwEMG0VkC0BJrQAAAABJRU5ErkJggg==" alt="QR Code Cidade do Caos" width="200" height="200" style="display:inline-block;background:#fff;padding:10px;border-radius:12px;margin:8px auto;">
+        <p style="font-size:12px;opacity:.7;margin-top:8px;">Aponte a câmera do celular · após publicar no GitHub Pages use <b>gerar-qr.html</b> com sua URL</p>
+      </div>
     <button type="button" class="leia-close" id="leiaClose">Fechar</button>
   </div>
 </div>
 
-<div class="overlay" id="startScreen" style="display:none;">
+<div class="overlay" id="startScreen" style="display:flex;">
   <div class="start-scroll">
     <h1>CIDADE DO CAOS</h1>
     <p class="desc">Open world Brasil · personagens 3D Mixamo (caminhada real) · desça do carro com 🚶. Cidades · polícia · Ammu · entregas.</p>
@@ -1119,6 +1114,22 @@ window.addEventListener('unhandledrejection', function(e){
       <div class="carOpt" data-car="ambulancia">🚑 Ambulância</div>
       <div class="carOpt" data-car="classic">🐢 Fusca</div>
       <div class="carOpt" data-car="muscle">🏁 Opala</div>
+      <div class="carOpt" data-car="corolla">🇯🇵 Corolla</div>
+      <div class="carOpt" data-car="onix">🇧🇷 Onix</div>
+      <div class="carOpt" data-car="hb20">🇰🇷 HB20</div>
+      <div class="carOpt" data-car="mustang">🇺🇸 Mustang</div>
+      <div class="carOpt" data-car="m3">🇩🇪 M3</div>
+      <div class="carOpt" data-car="ferrari">🇮🇹 Ferrari</div>
+      <div class="carOpt" data-car="rs6">🇩🇪 RS6</div>
+      <div class="carOpt" data-car="skyline">🇯🇵 R34</div>
+      <div class="carOpt" data-car="maverick">🇧🇷 Maverick</div>
+      <div class="carOpt" data-car="cb500">🏍️ CB500</div>
+      <div class="carOpt" data-car="gsxr">🏍️ GSX-R</div>
+      <div class="carOpt" data-car="z1000">🏍️ Z1000</div>
+      <div class="carOpt" data-car="ninja">🏍️ Ninja</div>
+      <div class="carOpt" data-car="factor">🏍️ Factor</div>
+      <div class="carOpt" data-car="cg160">🏍️ CG 160</div>
+      <div class="carOpt" data-car="biz">🛵 Biz</div>
       <div class="carOpt" data-car="heli">🚁 Heli</div>
       <div class="carOpt" data-car="barco">🚤 Barco</div>
       <div class="carOpt police-only" data-car="viatura" style="display:none;border-color:#3a6ad0;">🚓 Viatura PM</div>
@@ -1152,8 +1163,9 @@ window.addEventListener('unhandledrejection', function(e){
     <p id="bestScoreText">Recorde: $0</p>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
-    <button id="startBtn" type="button">▶ TOCAR PARA COMEÇAR</button>
+    <button id="startBtn" type="button" onclick="try{window.__cdcStart&&window.__cdcStart()}catch(e){}">▶ JOGAR · v3.4.0</button>
     <button id="startLeiaBtn" type="button" style="padding:12px 18px;border-radius:12px;border:1px solid rgba(255,207,64,0.5);background:rgba(255,207,64,0.15);color:#ffcf40;font-family:Oswald,sans-serif;font-weight:700;cursor:pointer;">📖 LEIA-ME</button>
+    <a href="jogo-celular.html" style="padding:12px 18px;border-radius:12px;border:1px solid rgba(126,200,255,0.45);background:rgba(126,200,255,0.12);color:#7ec8ff;font-family:Oswald,sans-serif;font-weight:700;text-decoration:none;">📱 CELULAR / QR</a>
   </div>
 </div>
 
@@ -1187,6 +1199,9 @@ window.addEventListener('unhandledrejection', function(e){
 <script>
 (function(){
 "use strict";
+window.CDC_BUILD = "3.4.0";
+window.CDC_VERSION = "3.4.0";
+console.log("%c Cidade do Caos v3.4.0 ", "background:#ffcf40;color:#111;font-weight:bold;padding:4px 8px;");
 if(typeof THREE === 'undefined'){
   throw new Error('THREE.js não carregou (v1.9). O jogo precisa de internet na 1ª abertura para baixar a biblioteca 3D. Confira o Wi‑Fi e recarregue com Ctrl+F5.');
 }
@@ -1204,6 +1219,8 @@ function safeRemoveItem(key){
 {
   const g = safeGetItem('cdc_gfx');
   if(g && g!=='low' && g!=='medium' && g!=='high') safeRemoveItem('cdc_gfx');
+  // v3.4.0: sobe quem ficou preso em low antigo
+  if(g==='low' && !IS_MOBILE){ try{ safeRemoveItem('cdc_gfx'); }catch(e){} }
 }
 
 const TAU = Math.PI*2;
@@ -1258,27 +1275,27 @@ function applyGfxLevel(level){
   GFX.level = level;
   safeSetItem('cdc_gfx', level);
   if(level==='low'){
-    // performance máxima
+    // bem leve
     GFX.pixelRatio = 1.0;
     GFX.shadows = false; GFX.shadowSize = 128;
     GFX.bloom = false; GFX.cine = false;
     GFX.grain = false;
-    GFX.lampLights = false; GFX.lampEvery = 99;
+    GFX.lampLights = true; GFX.lampEvery = 16;
     GFX.aniso = 1; GFX.rainEnv = false;
   } else if(level==='medium'){
-    // equilibrado e ainda leve
+    // equilibrado (padrão)
     GFX.pixelRatio = Math.min(1.15, window.devicePixelRatio||1);
     GFX.shadows = false; GFX.shadowSize = 256;
-    GFX.bloom = false; GFX.cine = false; GFX.grain = false;
-    GFX.lampLights = false; GFX.lampEvery = 24;
+    GFX.bloom = !IS_MOBILE; GFX.cine = false; GFX.grain = false;
+    GFX.lampLights = true; GFX.lampEvery = IS_MOBILE ? 12 : 8;
     GFX.aniso = 2; GFX.rainEnv = false;
   } else {
-    // high
-    GFX.pixelRatio = Math.min(IS_MOBILE ? 1.2 : 1.35, window.devicePixelRatio||1);
-    GFX.shadows = !IS_MOBILE; GFX.shadowSize = IS_MOBILE ? 512 : 1024;
-    GFX.bloom = !IS_MOBILE; GFX.cine = !IS_MOBILE; GFX.grain = false;
-    GFX.lampLights = !IS_MOBILE; GFX.lampEvery = IS_MOBILE ? 16 : 6;
-    GFX.aniso = IS_MOBILE ? 2 : 4; GFX.rainEnv = !IS_MOBILE;
+    // high sob demanda
+    GFX.pixelRatio = Math.min(IS_MOBILE ? 1.25 : 1.45, window.devicePixelRatio||1);
+    GFX.shadows = !IS_MOBILE; GFX.shadowSize = 512;
+    GFX.bloom = true; GFX.cine = !IS_MOBILE; GFX.grain = false;
+    GFX.lampLights = true; GFX.lampEvery = IS_MOBILE ? 10 : 6;
+    GFX.aniso = IS_MOBILE ? 2 : 4; GFX.rainEnv = false;
   }
   // só usa refs em GFX — nunca variáveis em TDZ
   try{
@@ -1330,28 +1347,31 @@ function cycleGfxLevel(){
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
-  antialias: false, // desligado = bem menos lag
+  antialias: false,
   powerPreference: 'high-performance',
   alpha: false,
   stencil: false,
   depth: true
 });
 try{
-  const pr = 1.0; // modo leve fixo no boot
+  const pr = Math.min(IS_MOBILE ? 1.0 : 1.2, window.devicePixelRatio || 1);
   renderer.setPixelRatio(pr);
 }catch(e){}
 
 GFX._renderer = renderer;
 applyGfxLevel(GFX.level);
 renderer.shadowMap.type = THREE.BasicShadowMap;
-renderer.shadowMap.enabled = false; // sombras desligadas (performance)
-renderer.shadowMap.autoUpdate = false; renderer.shadowMap.needsUpdate = true;
+renderer.shadowMap.enabled = !!GFX.shadows;
+renderer.shadowMap.autoUpdate = false;
 if(THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
-if(THREE.ACESFilmicToneMapping){ renderer.toneMapping = IS_MOBILE ? THREE.NoToneMapping : THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = IS_MOBILE ? 1.0 : 1.45; }
+if(THREE.ACESFilmicToneMapping){
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = IS_MOBILE ? 1.05 : 1.25;
+}
 if(renderer.capabilities && renderer.capabilities.getMaxAnisotropy){
   window.__maxAniso = Math.min(Math.max(GFX.aniso, 4), renderer.capabilities.getMaxAnisotropy());
 }
-if(!IS_MOBILE) renderer.physicallyCorrectLights = true;
+/* physicallyCorrectLights off — performance */
 
 /* ===== Gerador de mapas PBR procedurais ===== */
 function makeNoiseCanvas(size, fn){
@@ -1452,7 +1472,7 @@ const pbrTireNorm = makeNormalMap(64, 1.5, 1);
 const SKY_HORIZON = 0x121e36;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x040812);
-scene.fog = new THREE.FogExp2(SKY_HORIZON, IS_MOBILE ? 0.0065 : 0.0040);
+scene.fog = new THREE.FogExp2(SKY_HORIZON, IS_MOBILE ? 0.0060 : 0.0035);
 
 /* gradient sky dome — richer night palette */
 function makeSkyTexture(){
@@ -1488,7 +1508,7 @@ const skyDome = new THREE.Mesh(new THREE.SphereGeometry(580,24,24), skyMat);
 scene.add(skyDome);
 
 /* denser, multi-size starfield — menos estrelas no mobile */
-const starCount = IS_MOBILE ? 4 : 20;
+const starCount = IS_MOBILE ? 3 : 10;
 const starPos = new Float32Array(starCount*3);
 const starSizes = new Float32Array(starCount);
 for(let i=0;i<starCount;i++){
@@ -1542,7 +1562,7 @@ function makeCloudTexture(){
 }
 const cloudMat = new THREE.SpriteMaterial({map:makeCloudTexture(), transparent:true, opacity:0.2, depthWrite:false, fog:false});
 
-const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.3, IS_MOBILE ? 160 : 280);
+const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.4, IS_MOBILE ? 120 : 200);
 
 /* bloom + pós-produção cinematográfica */
 let composer = null, bloomPass = null, cinePass = null;
@@ -1597,13 +1617,13 @@ const CinematicShader = {
 };
 try{
   // Em mobile low, pula EffectComposer (economiza GPU e memória)
-  const useComposer = !IS_MOBILE && GFX.level!=='low' && typeof THREE.EffectComposer!=='undefined' && typeof THREE.RenderPass!=='undefined' && typeof THREE.UnrealBloomPass!=='undefined';
+  const useComposer = !IS_MOBILE && GFX.level==='high' && typeof THREE.EffectComposer!=='undefined' && typeof THREE.RenderPass!=='undefined' && typeof THREE.UnrealBloomPass!=='undefined';
   if(useComposer){
     if(IS_MOBILE || GFX.level==='low'){ throw new Error("skip composer"); }
     composer = new THREE.EffectComposer(renderer);
     composer.addPass(new THREE.RenderPass(scene, camera));
     // strength, radius, threshold — noite GTA: bloom em luzes, threshold alto
-    bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 1.45, 0.7, 0.48);
+    bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 1.15, 0.5, 0.55);
     bloomPass.enabled = GFX.bloom;
     composer.addPass(bloomPass);
     GFX._bloom = bloomPass;
@@ -1630,7 +1650,7 @@ resize(); addEventListener('resize', resize);
 
 /* ================= WORLD CONSTANTS ================= */
 // Mapa maior: cidades amplas, separadas por rodovia
-const CELL = 44, ROAD_W = 12, GRID_N = 36;
+const CELL = 44, ROAD_W = 12, GRID_N = 18;
 const WORLD = CELL*GRID_N;
 
 /* Cidades BR com perfil mais próximo do real */
@@ -1866,18 +1886,18 @@ if(!IS_MOBILE){
 }
 
 /* ================= LIGHTING (noite estilo GTA) ================= */
-const hemi = new THREE.HemisphereLight(0x7a9acc, 0x121820, IS_MOBILE ? 1.28 : 1.18);
+const hemi = new THREE.HemisphereLight(0x9ab8e8, 0x1a2230, IS_MOBILE ? 1.35 : 1.42);
 scene.add(hemi);
 
 const ambient = new THREE.AmbientLight(0x243850, IS_MOBILE ? 0.48 : 0.36);
 scene.add(ambient);
 
 // fill quente da cidade (laranja/âmbar das luzes)
-const cityFill = new THREE.HemisphereLight(0xffb070, 0x0a0c12, 0.38);
+const cityFill = new THREE.HemisphereLight(0xffc090, 0x0c1018, 0.52);
 cityFill.position.set(0, -1, 0);
 scene.add(cityFill);
 
-const moon = new THREE.DirectionalLight(0xc4d8ff, 1.28);
+const moon = new THREE.DirectionalLight(0xc8d8ff, IS_MOBILE ? 1.15 : 1.45);
 moon.castShadow = GFX.shadows;
 moon.shadow.mapSize.set(GFX.shadowSize, GFX.shadowSize);
 moon.shadow.camera.left = -75; moon.shadow.camera.right = 75;
@@ -2129,7 +2149,7 @@ function makeWallTexture(style){
   } else {
     // reboco / casa
     g.fillStyle = '#e4d8c8'; g.fillRect(0,0,W,H);
-    for(let i=0;i<9000;i++){
+    for(let i=0;i<120;i++){
       const s = 155+Math.floor(Math.random()*75);
       g.fillStyle = `rgba(${s},${s-8},${s-18},${0.07+Math.random()*0.14})`;
       g.fillRect(Math.random()*W, Math.random()*H, 1.2+Math.random(), 1.2+Math.random());
@@ -2217,7 +2237,7 @@ function makeConcreteTexture(){
   g.strokeStyle = 'rgba(0,0,0,0.28)'; g.lineWidth = 2;
   for(let y=0;y<256;y+=32){ g.beginPath(); g.moveTo(0,y); g.lineTo(256,y); g.stroke(); }
   for(let x=0;x<256;x+=32){ g.beginPath(); g.moveTo(x,0); g.lineTo(x,256); g.stroke(); }
-  for(let i=0;i<1400;i++){
+  for(let i=0;i<250;i++){
     const shade = 125+Math.floor(Math.random()*70);
     g.fillStyle = `rgba(${shade},${shade},${shade-5},${0.18+Math.random()*0.32})`;
     g.fillRect(Math.random()*256, Math.random()*256, 0.9+Math.random()*1.8, 0.9+Math.random()*1.8);
@@ -2243,7 +2263,7 @@ function makeAsphaltTexture(){
   // base cinza asfalto (mais legível, menos "preto borroso")
   g.fillStyle = '#2a2c32'; g.fillRect(0,0,size,size);
   // granulação
-  for(let i=0;i<22000;i++){
+  for(let i=0;i<200;i++){
     const shade = 28+Math.floor(Math.random()*42);
     const r = shade + Math.floor(Math.random()*8);
     const gg = shade + Math.floor(Math.random()*6);
@@ -2254,7 +2274,7 @@ function makeAsphaltTexture(){
     g.fillRect(x,y,s,s*(0.6+Math.random()*0.9));
   }
   // pedras
-  for(let i=0;i<500;i++){
+  for(let i=0;i<120;i++){
     const shade = 45+Math.floor(Math.random()*50);
     g.fillStyle = `rgba(${shade},${shade+3},${shade+8},${0.35+Math.random()*0.4})`;
     g.beginPath();
@@ -2362,7 +2382,7 @@ function makeAsphaltRoughnessMap(){
   const c = document.createElement('canvas'); c.width=size; c.height=size;
   const g = c.getContext('2d');
   g.fillStyle = '#d0d0d0'; g.fillRect(0,0,size,size);
-  for(let i=0;i<5000;i++){
+  for(let i=0;i<100;i++){
     const v = 140+Math.floor(Math.random()*90);
     g.fillStyle = `rgb(${v},${v},${v})`;
     g.fillRect(Math.random()*size, Math.random()*size, 1+Math.random()*2, 1+Math.random()*2);
@@ -2407,7 +2427,7 @@ function makeGrassTexture(){
   const c = document.createElement('canvas'); c.width=128; c.height=128;
   const g = c.getContext('2d');
   g.fillStyle = '#163a1c'; g.fillRect(0,0,128,128);
-  for(let i=0;i<900;i++){
+  for(let i=0;i<200;i++){
     g.fillStyle = Math.random()<0.45 ? '#2a5e32' : (Math.random()<0.5?'#0e2814':'#1e4a26');
     g.fillRect(Math.random()*128, Math.random()*128, 1.3, 2.8+Math.random()*2.5);
   }
@@ -4990,7 +5010,7 @@ function buildCarModel(bodyColor, isPolice, style){
   }
 
   /* ========== MOTOS REALISTAS ========== */
-  else if(style==='hornet' || style==='xj6' || style==='africatwin' || style==='mt09' || style==='s1000rr' || style==='r1' || style==='moto_pm'){
+  else if(style==='hornet' || style==='xj6' || style==='africatwin' || style==='mt09' || style==='s1000rr' || style==='r1' || style==='moto_pm' || style==='cb500' || style==='gsxr' || style==='z1000' || style==='factor' || style==='biz' || style==='ninja' || style==='cg160'){
     const isAT = style==='africatwin';
     const isHornet = style==='hornet';
     const isS1k = style==='s1000rr';
@@ -5397,7 +5417,9 @@ function buildCarModel(bodyColor, isPolice, style){
     rotor.position.set(0,2.1,0.2); bodyGroup.add(rotor);
     const rotor2 = new THREE.Mesh(new THREE.BoxGeometry(0.25,0.06,5.5), matMetal);
     rotor2.position.set(0,2.12,0.2); bodyGroup.add(rotor2);
-    g.userData.rotor = rotor; g.userData.rotor2 = rotor2;
+    // rotors guardados no bodyGroup (g ainda não existe)
+    bodyGroup.userData.heliRotor = rotor;
+    bodyGroup.userData.heliRotor2 = rotor2;
     farolE=part(0.2,0.15,0.15, matFarol, -0.5,0.55,1.5);
     farolD=part(0.2,0.15,0.15, matFarol, 0.5,0.55,1.5);
     lanternaE=part(0.2,0.12,0.1, matLanterna, -0.3,0.7,-3.2);
@@ -5520,7 +5542,7 @@ function buildCarModel(bodyColor, isPolice, style){
 
 
   // —— detalhes universais (mais realismo em todos os carros) ——
-  if(!(style==='hornet'||style==='xj6'||style==='africatwin'||style==='entrega'||style==='mt09'||style==='s1000rr'||style==='r1'||style==='moto_pm'||style==='heli'||style==='boat')){
+  if(!(style==='hornet'||style==='xj6'||style==='africatwin'||style==='entrega'||style==='mt09'||style==='s1000rr'||style==='r1'||style==='moto_pm'||style==='cb500'||style==='gsxr'||style==='z1000'||style==='factor'||style==='biz'||style==='ninja'||style==='cg160'||style==='heli'||style==='boat')){
     // saia / soleira
     part(0.06, 0.1, 2.6, matCarbon, -1.0, 0.28, 0.0);
     part(0.06, 0.1, 2.6, matCarbon,  1.0, 0.28, 0.0);
@@ -5540,7 +5562,7 @@ function buildCarModel(bodyColor, isPolice, style){
     }catch(e){}
   }
 
-  const isBike = (style==='hornet'||style==='xj6'||style==='africatwin'||style==='entrega'||style==='mt09'||style==='s1000rr'||style==='r1'||style==='moto_pm');
+  const isBike = (style==='hornet'||style==='xj6'||style==='africatwin'||style==='entrega'||style==='mt09'||style==='s1000rr'||style==='r1'||style==='moto_pm'||style==='cb500'||style==='gsxr'||style==='z1000'||style==='factor'||style==='biz'||style==='ninja'||style==='cg160');
   const isHeli = style==='heli';
   const isBoat = style==='boat';
 
@@ -5641,6 +5663,10 @@ function buildCarModel(bodyColor, isPolice, style){
   g.userData.pitch = 0; g.userData.roll = 0; g.userData.wheelie = 0; g.userData.prevSpeed = 0;
   g.userData.isHeli = isHeli;
   g.userData.isBoat = isBoat;
+  if(isHeli){
+    g.userData.rotor = bodyGroup.userData.heliRotor || null;
+    g.userData.rotor2 = bodyGroup.userData.heliRotor2 || null;
+  }
   g.userData.plate = plateText;
   try{ addVehicleOccupants(g, bodyGroup, isBike, isPolice, style); }catch(e){}
   g.userData.wheelFL = wheelFL; g.userData.wheelFR = wheelFR;
@@ -6048,7 +6074,7 @@ function makeShirtTexture(){
   const g = c.getContext('2d');
   g.fillStyle = '#f2f2f2'; g.fillRect(0,0,128,128);
   // tecido
-  for(let i=0;i<800;i++){
+  for(let i=0;i<180;i++){
     const shade = 185+Math.floor(Math.random()*55);
     g.fillStyle = `rgba(${shade},${shade},${shade},${0.12+Math.random()*0.22})`;
     g.fillRect(Math.random()*128, Math.random()*128, 1.4,1.4);
@@ -6068,7 +6094,7 @@ function makePantsTexture(){
   const c = document.createElement('canvas'); c.width=128; c.height=128;
   const g = c.getContext('2d');
   g.fillStyle = '#2a3038'; g.fillRect(0,0,128,128);
-  for(let i=0;i<900;i++){
+  for(let i=0;i<200;i++){
     const shade = 25+Math.floor(Math.random()*45);
     g.fillStyle = `rgba(${shade},${shade+4},${shade+14},${0.15+Math.random()*0.28})`;
     g.fillRect(Math.random()*128, Math.random()*128, 1.3,2);
@@ -6750,6 +6776,72 @@ const CAR_TYPES = {
   uno:{
     label:'🚗 Fiat Uno', color:0xe74c3c, accel:14, brake:18, maxs:38, maxr:-12, fric:11, turn:2.5, nitroMul:1.15, style:'gol',
     specs:{ motor:'1.0 FIRE', potencia:'75 cv', torque:'95 Nm', zeroCem:'13 s', vmax:'160 km/h', peso:'900 kg', tracao:'Dianteira', cambio:'5 marchas', ano:'Mille / novo' }
+  },
+  /* ===== v3.4.0 NOVOS CARROS ===== */
+  corolla:{
+    label:'🇯🇵 Corolla', color:0xc0c5ce, accel:15, brake:24, maxs:44, maxr:-13, fric:10.5, turn:2.35, nitroMul:1.05, style:'sedan', smooth:1.5,
+    specs:{ motor:'2.0 Flex Hybrid', potencia:'177 cv', torque:'210 Nm', zeroCem:'8,2 s', vmax:'180 km/h', peso:'1450 kg', tracao:'Dianteira', cambio:'CVT', ano:'2020–' }
+  },
+  onix:{
+    label:'🇧🇷 Onix', color:0x2c3e50, accel:14, brake:22, maxs:40, maxr:-12, fric:11, turn:2.4, nitroMul:1.1, style:'gol',
+    specs:{ motor:'1.0 Turbo Flex', potencia:'116 cv', torque:'165 Nm', zeroCem:'9,8 s', vmax:'175 km/h', peso:'1100 kg', tracao:'Dianteira', cambio:'6 marchas', ano:'2020–' }
+  },
+  hb20:{
+    label:'🇰🇷 HB20', color:0x3498db, accel:14, brake:22, maxs:41, maxr:-12, fric:11, turn:2.45, nitroMul:1.1, style:'gol',
+    specs:{ motor:'1.0 TGDI', potencia:'120 cv', torque:'172 Nm', zeroCem:'9,5 s', vmax:'178 km/h', peso:'1080 kg', tracao:'Dianteira', cambio:'6 marchas', ano:'2023–' }
+  },
+  mustang:{
+    label:'🇺🇸 Mustang GT', color:0xc0392b, accel:24, brake:26, maxs:58, maxr:-14, fric:9.2, turn:2.2, nitroMul:0.8, style:'muscle', smooth:1.3,
+    specs:{ motor:'5.0 V8 Coyote', potencia:'483 cv', torque:'570 Nm', zeroCem:'4,3 s', vmax:'250 km/h', peso:'1700 kg', tracao:'Traseira', cambio:'10 marchas', ano:'2018–' }
+  },
+  m3:{
+    label:'🇩🇪 BMW M3', color:0x1a1a2e, accel:26, brake:28, maxs:60, maxr:-15, fric:8.8, turn:2.55, nitroMul:0.75, style:'sedan', smooth:1.55,
+    specs:{ motor:'3.0 I6 Twin-Turbo', potencia:'510 cv', torque:'650 Nm', zeroCem:'3,9 s', vmax:'290 km/h', peso:'1730 kg', tracao:'Traseira', cambio:'8 marchas', ano:'2021–' }
+  },
+  ferrari:{
+    label:'🇮🇹 Ferrari F8', color:0xff1a1a, accel:30, brake:30, maxs:68, maxr:-16, fric:8.2, turn:2.7, nitroMul:0.65, style:'lambo', smooth:1.6,
+    specs:{ motor:'3.9L V8 Twin-Turbo', potencia:'720 cv', torque:'770 Nm', zeroCem:'2,9 s', vmax:'340 km/h', peso:'1435 kg', tracao:'Traseira', cambio:'7 DCT', ano:'2019–' }
+  },
+  rs6:{
+    label:'🇩🇪 Audi RS6', color:0x2d3436, accel:27, brake:29, maxs:62, maxr:-15, fric:8.5, turn:2.4, nitroMul:0.7, style:'sedan', smooth:1.5,
+    specs:{ motor:'4.0 V8 Twin-Turbo', potencia:'600 cv', torque:'800 Nm', zeroCem:'3,6 s', vmax:'305 km/h', peso:'2075 kg', tracao:'Quattro', cambio:'8 marchas', ano:'2020–' }
+  },
+  skyline:{
+    label:'🇯🇵 Skyline R34', color:0x0984e3, accel:23, brake:25, maxs:56, maxr:-14, fric:9.0, turn:2.5, nitroMul:0.78, style:'gtr', smooth:1.45,
+    specs:{ motor:'2.6 I6 Twin-Turbo RB26', potencia:'280+ cv', torque:'392 Nm', zeroCem:'4,9 s', vmax:'250 km/h', peso:'1540 kg', tracao:'4WD ATTESA', cambio:'6 marchas', ano:'1999–2002' }
+  },
+  maverick:{
+    label:'🇧🇷 Maverick', color:0xd35400, accel:16, brake:22, maxs:42, maxr:-12, fric:11, turn:2.2, nitroMul:1.05, style:'saveiro',
+    specs:{ motor:'2.0 Turbo Flex', potencia:'253 cv', torque:'380 Nm', zeroCem:'7,0 s', vmax:'200 km/h', peso:'1850 kg', tracao:'4x4', cambio:'Automático', ano:'2022–' }
+  },
+  /* ===== v3.4.0 NOVAS MOTOS ===== */
+  cb500:{
+    label:'🏍️ CB 500F', color:0xc0392b, accel:22, brake:24, maxs:48, maxr:-14, fric:8.5, turn:3.1, nitroMul:0.9, style:'hornet', isBike:true, smooth:1.4,
+    specs:{ motor:'471 cc parallel twin', potencia:'47 cv', torque:'43 Nm', zeroCem:'5,5 s', vmax:'180 km/h', peso:'189 kg', tracao:'Traseira', cambio:'6 marchas', ano:'2019–' }
+  },
+  gsxr:{
+    label:'🏍️ GSX-R 1000', color:0x1e3799, accel:28, brake:28, maxs:62, maxr:-16, fric:7.5, turn:3.3, nitroMul:0.7, style:'s1000rr', isBike:true, smooth:1.5,
+    specs:{ motor:'999 cc I4', potencia:'199 cv', torque:'117 Nm', zeroCem:'3,0 s', vmax:'299 km/h', peso:'202 kg', tracao:'Traseira', cambio:'6 marchas', ano:'2017–' }
+  },
+  z1000:{
+    label:'🏍️ Z1000', color:0x2d3436, accel:26, brake:26, maxs:56, maxr:-15, fric:7.8, turn:3.2, nitroMul:0.75, style:'mt09', isBike:true, smooth:1.45,
+    specs:{ motor:'1043 cc I4', potencia:'142 cv', torque:'111 Nm', zeroCem:'3,3 s', vmax:'250 km/h', peso:'221 kg', tracao:'Traseira', cambio:'6 marchas', ano:'2014–' }
+  },
+  factor:{
+    label:'🏍️ Factor 150', color:0x27ae60, accel:12, brake:16, maxs:28, maxr:-10, fric:12, turn:2.8, nitroMul:1.3, style:'entrega', isBike:true, smooth:1.2,
+    specs:{ motor:'149 cc', potencia:'12 cv', torque:'12 Nm', zeroCem:'12 s', vmax:'115 km/h', peso:'115 kg', tracao:'Traseira', cambio:'5 marchas', ano:'Street BR' }
+  },
+  biz:{
+    label:'🛵 Biz 125', color:0xf1c40f, accel:10, brake:14, maxs:24, maxr:-8, fric:13, turn:2.6, nitroMul:1.4, style:'entrega', isBike:true, smooth:1.15,
+    specs:{ motor:'124 cc', potencia:'9 cv', torque:'10 Nm', zeroCem:'15 s', vmax:'95 km/h', peso:'105 kg', tracao:'Traseira', cambio:'4 marchas', ano:'Popular BR' }
+  },
+  ninja:{
+    label:'🏍️ Ninja ZX-6R', color:0x00b894, accel:27, brake:27, maxs:58, maxr:-15, fric:7.6, turn:3.35, nitroMul:0.72, style:'r1', isBike:true, smooth:1.5,
+    specs:{ motor:'636 cc I4', potencia:'130 cv', torque:'71 Nm', zeroCem:'3,2 s', vmax:'260 km/h', peso:'196 kg', tracao:'Traseira', cambio:'6 marchas', ano:'2019–' }
+  },
+  cg160:{
+    label:'🏍️ CG 160', color:0xb2bec3, accel:11, brake:15, maxs:26, maxr:-9, fric:12.5, turn:2.7, nitroMul:1.35, style:'entrega', isBike:true, smooth:1.2,
+    specs:{ motor:'162 cc', potencia:'15 cv', torque:'14 Nm', zeroCem:'11 s', vmax:'120 km/h', peso:'120 kg', tracao:'Traseira', cambio:'5 marchas', ano:'Titan / Start BR' }
   }
 };
 const CHAR_TYPES = {
@@ -6772,7 +6864,7 @@ const CHAR_TYPES = {
   streamer:{label:'Streamer', cloth:0x9b59b6, skin:0xc68642, hair:0x0a0a0a, scaleH:0.99, bonus:'+$ em eventos · $105/2min', salary:105, payEvery:100, startMoney:150, eventBonus:1.25},
   fazendeiro:{label:'Fazendeiro', cloth:0x6b4423, skin:0xc68642, hair:0x3b2a1a, scaleH:0.89, bonus:'Caminhão ok · $95/2min', salary:95, payEvery:130, startMoney:120}
 };
-let ACCEL=15, BRAKEA=22, MAXS=40, MAXR=-13, FRIC=11, TURN=2.3, NITRO_EFF=1.0;
+let ACCEL=16, BRAKEA=26, MAXS=42, MAXR=-14, FRIC=10, TURN=2.45, NITRO_EFF=1.0;
 let selectedCarKey = 'supra';
 let selectedCharKey = 'marcos';
 function getChar(){ return CHAR_TYPES[selectedCharKey] || CHAR_TYPES.marcos; }
@@ -6808,8 +6900,25 @@ function engineStage(){
 function getDriveSmooth(){
   try{
     const t = CAR_TYPES[selectedCarKey];
-    return (t && t.smooth) ? Math.max(1.25, t.smooth) : 1.45;
-  }catch(e){ return 1.2; }
+    return (t && t.smooth) ? Math.max(1.15, t.smooth) : 1.35;
+  }catch(e){ return 1.15; }
+}
+/* massa / grip / power band por tipo de veículo */
+function getVehiclePhys(){
+  try{
+    const t = CAR_TYPES[selectedCarKey] || {};
+    const isBike = !!t.isBike;
+    const isHeli = !!t.isHeli;
+    return {
+      isBike, isHeli,
+      mass: isHeli ? 0.7 : (isBike ? 0.55 : (t.mass || 1.0)),
+      grip: isBike ? 0.88 : (t.grip || 1.0),
+      drag: isBike ? 0.018 : 0.028,
+      powerBand: isBike ? 1.15 : 1.0
+    };
+  }catch(e){
+    return { isBike:false, isHeli:false, mass:1, grip:1, drag:0.028, powerBand:1 };
+  }
 }
 function applyTuningToStats(){
   const t = CAR_TYPES[selectedCarKey] || CAR_TYPES.supra;
@@ -7078,6 +7187,7 @@ function applyCarType(key){
   try{
     const t2 = CAR_TYPES[selectedCarKey];
     if(t2 && t2.isBike) showToast('🏍️ GRAU = tecla G · Nitro = tecla N');
+    if(t2 && t2.isHeli) showToast('🚁 Heli: GÁS avança · N sobe · FREIO desce');
   }catch(e){}
 }
 
@@ -7111,11 +7221,89 @@ const bulletGeo = new THREE.SphereGeometry(0.08,6,6);
 const bulletMat = new THREE.MeshBasicMaterial({color:0xffee88});
 const muzzleMat = new THREE.SpriteMaterial({map:glowTex, color:0xffcc66, transparent:true, opacity:0.9, blending:THREE.AdditiveBlending, depthWrite:false});
 
-function sfxGun(){
-  beep(180+Math.random()*40, 0.06, 'square', 0.12);
-  setTimeout(()=>beep(90+Math.random()*30, 0.08, 'sawtooth', 0.1), 30);
+function playNoiseBurst(dur, vol, freqLo, freqHi){
+  if(!actx) return;
+  try{
+    const t0 = actx.currentTime;
+    const nLen = Math.max(1, Math.floor(actx.sampleRate * dur));
+    const buf = actx.createBuffer(1, nLen, actx.sampleRate);
+    const data = buf.getChannelData(0);
+    for(let i=0;i<nLen;i++){
+      const env = Math.pow(1 - i/nLen, 1.8);
+      data[i] = (Math.random()*2-1) * env;
+    }
+    const src = actx.createBufferSource();
+    src.buffer = buf;
+    const filt = actx.createBiquadFilter();
+    filt.type = 'bandpass';
+    filt.frequency.value = (freqLo + freqHi) * 0.5;
+    filt.Q.value = 0.6;
+    const g = actx.createGain();
+    g.gain.setValueAtTime(vol, t0);
+    g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    src.connect(filt); filt.connect(g); g.connect(actx.destination);
+    src.start(t0);
+  }catch(e){}
 }
-function sfxEmpty(){ beep(220,0.05,'square',0.05); }
+function sfxGun(weapon){
+  if(!actx){ try{ initAudio(); }catch(e){} }
+  if(!actx) return;
+  try{ if(actx.state==='suspended') actx.resume(); }catch(e){}
+  const w = weapon || currentGun || '9mm';
+  const t0 = actx.currentTime;
+  try{
+    if(w==='bat' || w==='faca'){
+      // impacto corpo a corpo
+      beep(90+Math.random()*30, 0.07, 'sawtooth', 0.1);
+      playNoiseBurst(0.04, 0.12, 200, 800);
+      return;
+    }
+    if(w==='shotgun'){
+      playNoiseBurst(0.18, 0.32, 80, 1200);
+      beep(70+Math.random()*20, 0.12, 'sawtooth', 0.18);
+      setTimeout(()=>beep(50, 0.08, 'square', 0.1), 40);
+      return;
+    }
+    if(w==='ak47' || w==='uzi'){
+      playNoiseBurst(0.06, 0.22, 150, 2500);
+      beep(140+Math.random()*40, 0.04, 'square', 0.12);
+      setTimeout(()=>beep(80, 0.05, 'sawtooth', 0.08), 20);
+      return;
+    }
+    if(w==='sniper'){
+      playNoiseBurst(0.22, 0.28, 100, 900);
+      beep(100, 0.1, 'sawtooth', 0.16);
+      setTimeout(()=>beep(55, 0.15, 'triangle', 0.1), 50);
+      return;
+    }
+    if(w==='rpg'){
+      playNoiseBurst(0.35, 0.35, 40, 400);
+      beep(60, 0.2, 'sawtooth', 0.22);
+      setTimeout(()=>beep(40, 0.25, 'sawtooth', 0.15), 80);
+      setTimeout(()=>playNoiseBurst(0.4, 0.25, 30, 200), 100);
+      return;
+    }
+    // .38 / 9mm padrão
+    playNoiseBurst(0.08, 0.24, 200, 3000);
+    const o = actx.createOscillator();
+    const g = actx.createGain();
+    o.type = 'square';
+    o.frequency.setValueAtTime(220+Math.random()*80, t0);
+    o.frequency.exponentialRampToValueAtTime(60, t0+0.07);
+    g.gain.setValueAtTime(0.14, t0);
+    g.gain.exponentialRampToValueAtTime(0.001, t0+0.09);
+    o.connect(g); g.connect(actx.destination);
+    o.start(t0); o.stop(t0+0.1);
+    setTimeout(()=>beep(70+Math.random()*20, 0.05, 'sawtooth', 0.08), 25);
+  }catch(e){
+    beep(180+Math.random()*40, 0.06, 'square', 0.12);
+  }
+}
+function sfxEmpty(){
+  if(!actx) return;
+  beep(180, 0.04, 'square', 0.05);
+  setTimeout(()=>beep(120, 0.05, 'triangle', 0.04), 40);
+}
 
 function setCarOccupantsVisible(group, vis){
   if(!group || !group.userData || !group.userData.occupants) return;
@@ -7166,7 +7354,7 @@ function toggleFoot(){
     player.speed = 0;
     setCarOccupantsVisible(player.group, false);
   } else {
-    if(parkedCarPos && dist(player.x,player.z,parkedCarPos.x,parkedCarPos.z) < 4.5){
+    if(parkedCarPos && dist(player.x,player.z,parkedCarPos.x,parkedCarPos.z) < ((player.group&&player.group.userData&&player.group.userData.isHeli)?8:5.5)){
       onFoot = false;
       player.x = parkedCarPos.x; player.z = parkedCarPos.z; player.angle = parkedCarPos.angle;
       player.footGroup.visible = false;
@@ -7518,7 +7706,7 @@ function fireGun(){
   ammo--;
   if(currentGun) ammoStock[currentGun] = ammo;
   shootCooldown = def.cooldown;
-  sfxGun();
+  sfxGun(currentGun);
   updateAmmoUI();
   let wAdd = 1;
   if(currentGun==='shotgun' || currentGun==='ak47') wAdd = 2;
@@ -7573,7 +7761,7 @@ function fireGun(){
 
 function explodeAt(x, z, dmg){
   try{ spawnBurst(x, z); if(typeof spawnDebris==='function') spawnDebris(x, 0.5, z, 0, 0, 6); }catch(e){}
-  try{ sfxGun(); beep(60, 0.2, 'sawtooth', 0.2); }catch(e){}
+  try{ sfxGun(currentGun); beep(60, 0.2, 'sawtooth', 0.2); }catch(e){}
   for(const p of pedestrians){
     if((p.downTimer||0)>0) continue;
     const d = dist(x,z,p.x,p.z);
@@ -7648,30 +7836,29 @@ function updateBullets(dt){
   }
 }
 
-const WALK_ACCEL=18, WALK_SPEED=6.8, WALK_FRIC=11, WALK_TURN=3.6;
+const WALK_ACCEL=22, WALK_SPEED=7.4, WALK_FRIC=14, WALK_TURN=4.2;
 function updatePlayerFoot(dt){
   if(typeof INTERIOR!=='undefined' && INTERIOR.active){ player.speed=0; return; }
-  // aceleração suave (menos “escorregadio”)
-  if(keys.up) player.speed += WALK_ACCEL*dt;
-  else if(keys.down) player.speed -= WALK_ACCEL*dt*0.85;
+  // corrida com inércia (não escorrega parado)
+  if(keys.up) player.speed += WALK_ACCEL * dt * (player.speed < 0 ? 1.4 : 1);
+  else if(keys.down) player.speed -= WALK_ACCEL * dt * 0.95;
   else {
-    const fric = WALK_FRIC * (Math.abs(player.speed)>2 ? 1.15 : 1);
-    if(player.speed>0.25) player.speed -= fric*dt;
-    else if(player.speed<-0.25) player.speed += fric*dt;
+    const fric = WALK_FRIC * (Math.abs(player.speed)>2.5 ? 1.35 : 1.1);
+    if(player.speed>0.2) player.speed -= fric*dt;
+    else if(player.speed<-0.2) player.speed += fric*dt;
     else player.speed = 0;
   }
-  const hpSlow = playerHP < 30 ? 0.65 : playerHP < 60 ? 0.85 : 1;
-  player.speed = clamp(player.speed, -3.2, WALK_SPEED * hpSlow);
-  // virar mais rápido parado, menos em corrida
-  const turnMul = 1.15 - Math.min(0.45, Math.abs(player.speed)/WALK_SPEED*0.45);
+  const hpSlow = playerHP < 30 ? 0.6 : playerHP < 60 ? 0.82 : 1;
+  player.speed = clamp(player.speed, -3.6, WALK_SPEED * hpSlow);
+  const turnMul = 1.25 - Math.min(0.5, Math.abs(player.speed)/WALK_SPEED*0.5);
   if(player._footSteer === undefined) player._footSteer = 0;
   let footIn = 0;
   if(keys.left) footIn -= 1;
   if(keys.right) footIn += 1;
   const footTarget = footIn * WALK_TURN * turnMul;
-  player._footSteer += (footTarget - player._footSteer) * Math.min(1, dt * 12);
+  player._footSteer += (footTarget - player._footSteer) * Math.min(1, dt * 14);
   player.angle += player._footSteer * dt;
-  if(!footIn) player._footSteer *= Math.max(0, 1 - dt * 10);
+  if(!footIn) player._footSteer *= Math.max(0, 1 - dt * 12);
   player.x += Math.cos(player.angle)*player.speed*dt;
   player.z += Math.sin(player.angle)*player.speed*dt;
   player.x = clamp(player.x,-6,WORLD+6);
@@ -8772,7 +8959,7 @@ function updateNPC(c,dt){
   c.displaySpeed = c.speed * speedMul;
 }
 const npcCars = [];
-const NPC_TRAFFIC_COUNT = IS_MOBILE ? 2 : 4;
+const NPC_TRAFFIC_COUNT = IS_MOBILE ? 1 : 3;
 try{
   for(let i=0;i<NPC_TRAFFIC_COUNT;i++){
     try{ npcCars.push(makeNPC()); }catch(e){ console.warn('npc', e); }
@@ -8895,7 +9082,7 @@ function tryStealParkedCar(){
   const style = target.style || 'sedan';
   const color = (target.color != null) ? target.color : randomCarColor();
   // mapa style -> car key aproximado
-  const styleToKey = {supra:'supra',gtr:'gtr',lambo:'lambo',bugatti:'bugatti',porsche:'porsche',porsche_rsr:'porsche_rsr',civic:'civic',gol:'gol',saveiro:'saveiro',van:'van',sedan:'sedan'};
+  const styleToKey = {supra:'supra',gtr:'gtr',lambo:'lambo',bugatti:'bugatti',porsche:'porsche',porsche_rsr:'porsche_rsr',civic:'civic',gol:'gol',saveiro:'saveiro',van:'van',sedan:'sedan',heli:'heli',boat:'barco',truck:'caminhao',caminhao:'caminhao',hornet:'hornet',moto_pm:'moto_pm'};
   selectedCarKey = styleToKey[style] || 'sedan';
   // aplica stats sem resetar tunagem completa demais
   const t = CAR_TYPES[selectedCarKey] || CAR_TYPES.sedan;
@@ -9514,7 +9701,7 @@ function npcShoot(shooter, target){
   if((shooter.shootCD||0) > 0) return;
   if((shooter.downTimer||0) > 0) return;
   shooter.shootCD = 0.4 + Math.random()*0.35;
-  sfxGun();
+  sfxGun(currentGun);
   const ang = Math.atan2(target.z - shooter.z, target.x - shooter.x) + (Math.random()-0.5)*0.12;
   const ox = shooter.x + Math.cos(ang)*0.6;
   const oz = shooter.z + Math.sin(ang)*0.6;
@@ -13479,7 +13666,8 @@ const skidGeo = new THREE.CircleGeometry(0.42,8);
 const skidMat = new THREE.MeshBasicMaterial({color:0x101010, transparent:true, opacity:0.4, depthWrite:false});
 const skidMarks = [];
 function maybeSkid(){
-  if((keys.left||keys.right) && Math.abs(player.speed)>12.2){
+  const drifting = (keys.left||keys.right) && (keys.down || Math.abs(player._lat||0)>1.2);
+  if(((keys.left||keys.right) && Math.abs(player.speed)>10) || (drifting && Math.abs(player.speed)>7)){
     const m = new THREE.Mesh(skidGeo, skidMat);
     m.rotation.x = -Math.PI/2;
     m.position.set(player.x+(Math.random()-0.5)*0.5, 0.025, player.z+(Math.random()-0.5)*0.5);
@@ -13543,40 +13731,96 @@ function sfxBackfire(){
     setTimeout(()=>beep(55+Math.random()*30,0.07,'square',0.12), 45);
   }
 }
-/* Motor contínuo ao acelerar */
-let engOsc=null, engGain=null, engOsc2=null, engGain2=null, engStarted=false;
+/* ===== MOTOR REALISTA (camadas) ===== */
+let engOsc=null, engGain=null, engOsc2=null, engGain2=null, engOsc3=null, engGain3=null;
+let engNoise=null, engNoiseGain=null, engFilter=null, engStarted=false;
 function ensureEngineAudio(){
   if(!actx || engStarted) return;
   try{
+    // grave do motor
     engOsc = actx.createOscillator();
     engGain = actx.createGain();
+    engFilter = actx.createBiquadFilter();
+    engFilter.type = 'lowpass';
+    engFilter.frequency.value = 900;
+    engFilter.Q.value = 0.7;
     engOsc.type = 'sawtooth';
-    engOsc.frequency.value = 55;
+    engOsc.frequency.value = 48;
     engGain.gain.value = 0.0001;
-    engOsc.connect(engGain); engGain.connect(actx.destination);
+    engOsc.connect(engFilter);
+    engFilter.connect(engGain);
+    engGain.connect(actx.destination);
     engOsc.start();
+    // harmônico médio
     engOsc2 = actx.createOscillator();
     engGain2 = actx.createGain();
     engOsc2.type = 'square';
-    engOsc2.frequency.value = 110;
+    engOsc2.frequency.value = 96;
     engGain2.gain.value = 0.0001;
     engOsc2.connect(engGain2); engGain2.connect(actx.destination);
     engOsc2.start();
+    // agudo / transmissão
+    engOsc3 = actx.createOscillator();
+    engGain3 = actx.createGain();
+    engOsc3.type = 'triangle';
+    engOsc3.frequency.value = 140;
+    engGain3.gain.value = 0.0001;
+    engOsc3.connect(engGain3); engGain3.connect(actx.destination);
+    engOsc3.start();
+    // ruído de escape / ar
+    const nLen = actx.sampleRate * 2;
+    const buf = actx.createBuffer(1, nLen, actx.sampleRate);
+    const data = buf.getChannelData(0);
+    for(let i=0;i<nLen;i++) data[i] = (Math.random()*2-1) * 0.4;
+    engNoise = actx.createBufferSource();
+    engNoise.buffer = buf;
+    engNoise.loop = true;
+    engNoiseGain = actx.createGain();
+    engNoiseGain.gain.value = 0.0001;
+    const nFilt = actx.createBiquadFilter();
+    nFilt.type = 'bandpass';
+    nFilt.frequency.value = 400;
+    nFilt.Q.value = 0.8;
+    engNoise.connect(nFilt);
+    nFilt.connect(engNoiseGain);
+    engNoiseGain.connect(actx.destination);
+    engNoise.start();
     engStarted = true;
-  }catch(e){ engStarted=false; }
+  }catch(e){ engStarted=false; console.warn('engine audio', e); }
 }
 function updateEngineSound(accelerating, speed){
+  if(!actx){ try{ initAudio(); }catch(e){} }
   if(!actx) return;
+  try{ if(actx.state==='suspended') actx.resume(); }catch(e){}
   ensureEngineAudio();
   if(!engGain) return;
-  const rpm = 55 + Math.min(180, Math.abs(speed)*4.2);
-  const vol = accelerating ? (0.04 + Math.min(0.12, Math.abs(speed)*0.0035)) : (Math.abs(speed)>2 ? 0.018 : 0.0001);
+  const sp = Math.abs(speed)||0;
+  const isBike = !!(typeof CAR_TYPES!=='undefined' && CAR_TYPES[selectedCarKey] && CAR_TYPES[selectedCarKey].isBike);
+  const isHeli = !!(typeof CAR_TYPES!=='undefined' && CAR_TYPES[selectedCarKey] && CAR_TYPES[selectedCarKey].isHeli);
+  // RPM base por tipo
+  let base = isHeli ? 80 : (isBike ? 70 : 48);
+  let mul = isHeli ? 2.2 : (isBike ? 5.5 : 4.0);
+  const rpm = base + Math.min(isBike?320:200, sp * mul);
+  const boost = (typeof keys!=='undefined' && keys.nitro && accelerating) ? 1.25 : 1;
+  let vol = 0.0001;
+  if(accelerating){
+    vol = (isBike ? 0.055 : 0.045) + Math.min(isBike?0.16:0.14, sp * 0.004) * boost;
+  } else if(sp > 1.5){
+    vol = 0.02 + Math.min(0.06, sp * 0.0018); // marcha lenta em movimento
+  } else if(!onFoot){
+    vol = 0.012; // idle parado
+  }
+  if(onFoot) vol = 0.0001;
   const now = actx.currentTime;
   try{
-    engOsc.frequency.setTargetAtTime(rpm, now, 0.08);
-    engOsc2.frequency.setTargetAtTime(rpm*2.05 + (accelerating?15:0), now, 0.08);
-    engGain.gain.setTargetAtTime(vol, now, 0.06);
-    engGain2.gain.setTargetAtTime(vol*0.35, now, 0.06);
+    engOsc.frequency.setTargetAtTime(rpm * boost, now, 0.07);
+    engOsc2.frequency.setTargetAtTime(rpm * 2.02 * boost + (accelerating?12:0), now, 0.07);
+    if(engOsc3) engOsc3.frequency.setTargetAtTime(rpm * 3.1 * boost, now, 0.09);
+    engGain.gain.setTargetAtTime(vol, now, 0.05);
+    engGain2.gain.setTargetAtTime(vol * (isBike?0.45:0.32), now, 0.05);
+    if(engGain3) engGain3.gain.setTargetAtTime(vol * 0.18, now, 0.06);
+    if(engNoiseGain) engNoiseGain.gain.setTargetAtTime(accelerating ? vol * 0.55 : vol * 0.2, now, 0.08);
+    if(engFilter) engFilter.frequency.setTargetAtTime(600 + Math.min(1800, sp * 25) * boost, now, 0.1);
   }catch(e){}
 }
 function maybeExhaust(){
@@ -13593,7 +13837,7 @@ let weatherMode = 'clear'; // clear | rain | storm | fog
 let rainEnvCam = null, rainEnvRT = null, rainEnvTimer = 0;
 let dayTime = 0.35; // 0=meia-noite, 0.25=amanhecer, 0.5=meio-dia, 0.75=pôr do sol
 const DAY_CYCLE_SEC = IS_MOBILE ? 480 : 360; // ciclo completo
-const roadMatBase = {roughness:0.9, metalness:0.05, color:new THREE.Color(0x22252c)};
+const roadMatBase = {roughness:0.72, metalness:0.12, color:new THREE.Color(0x1c1f28)};
 const sidewalkMatBase = {roughness:0.95, metalness:0.02};
 // obras / bloqueios aleatórios
 const roadBlocks = [];
@@ -14170,9 +14414,50 @@ function toggleMusicMute(){
 }
 
 
+function loadQrLib(cb){
+  if(window.QRCode){ cb(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+  s.onload = function(){ cb(); };
+  s.onerror = function(){
+    const img = document.getElementById('qrFallbackImg');
+    const host = document.getElementById('qrCanvasHost');
+    if(host) host.style.display = 'none';
+    if(img) img.style.display = 'inline-block';
+  };
+  document.head.appendChild(s);
+}
+function renderLeiaQr(){
+  const host = document.getElementById('qrCanvasHost');
+  const img = document.getElementById('qrFallbackImg');
+  // sempre mostra a imagem embutida
+  if(img){ img.style.display = 'inline-block'; }
+  if(host){ host.style.display = 'none'; host.innerHTML = ''; }
+  let url = 'https://seu-usuario.github.io/cidade-do-caos/';
+  try{
+    if(location.protocol.indexOf('http')===0){
+      url = location.href.split('#')[0].replace(/index\.html.*/i,'').replace(/cidade-do-caos\.html.*/i,'');
+      if(!url.endsWith('/')) url += '/';
+      url += 'index.html';
+    }
+  }catch(e){}
+  loadQrLib(function(){
+    try{
+      if(!host) return;
+      host.innerHTML = '';
+      host.style.display = 'inline-block';
+      new QRCode(host, { text: url, width: 200, height: 200, colorDark: '#000000', colorLight: '#ffffff' });
+      if(img) img.style.display = 'none'; // só esconde fallback se o live funcionou
+    }catch(e){
+      if(img) img.style.display = 'inline-block';
+      if(host) host.style.display = 'none';
+    }
+  });
+}
 function openLeiaMe(){
   const el = document.getElementById('leiaScreen');
   if(el) el.classList.add('show');
+  try{ renderLeiaQr(); }catch(e){}
 }
 function closeLeiaMe(){
   const el = document.getElementById('leiaScreen');
@@ -15046,7 +15331,7 @@ function updateIntro(dt){
     try{ initAudio(); beep(180,0.12,'sine',0.05); }catch(e){}
   }
   poster.addEventListener('click', dismissPoster);
-  setTimeout(dismissPoster, 3400);
+  setTimeout(dismissPoster, 900);
 })();
 document.getElementById('introSkip').addEventListener('click', endIntro);
 document.getElementById('introScreen').addEventListener('click', (e)=>{
@@ -15066,101 +15351,128 @@ setTimeout(checkReadyAndStart, 300);
 /* ================= PLAYER PHYSICS ================= */
 function updatePlayer(dt){
   if(typeof INTERIOR!=='undefined' && INTERIOR.active){ player.speed=0; return; }
+  const phys = getVehiclePhys();
   const boosting = keys.nitro && keys.up && nitroFuel>1;
   let accel = ACCEL, capMax = MAXS;
-  const engMul = 1 + TUNING.engine * 0.04;
+  const engMul = 1 + TUNING.engine * 0.05;
   if(boosting){
-    accel = ACCEL*(2.3 + TUNING.engine*0.08); capMax = MAXS*(1.4 + TUNING.engine*0.03);
-    nitroFuel = Math.max(0, nitroFuel-(46/NITRO_EFF)*dt);
-    if(Math.random()<0.7) spawnFlame();
-    // nitro: estalos frequentes
-    if(Math.random()<0.12){ sfxBackfire(); spawnExhaustFlame(); }
+    accel = ACCEL*(2.45 + TUNING.engine*0.1); capMax = MAXS*(1.48 + TUNING.engine*0.04);
+    nitroFuel = Math.max(0, nitroFuel-(44/NITRO_EFF)*dt);
+    if(Math.random()<0.75) spawnFlame();
+    if(Math.random()<0.14){ sfxBackfire(); spawnExhaustFlame(); }
   } else {
-    nitroFuel = Math.min(100, nitroFuel+22*dt);
-    // anti-lag ao soltar o gás
-    if(keys.up===false && Math.abs(player.speed)>12 && Math.random()<0.045){
+    nitroFuel = Math.min(100, nitroFuel+24*dt);
+    if(keys.up===false && Math.abs(player.speed)>11 && Math.random()<0.05){
       sfxBackfire();
       spawnExhaustFlame();
     }
   }
-  accel *= engMul;
+  accel *= engMul * phys.powerBand;
   let fricNow = FRIC;
-  // pneu furado: perde velocidade e aderência
   if(typeof tireFlat === 'number' && tireFlat > 0.05){
     const flat = tireFlat;
-    accel *= (1 - flat*0.55);
-    capMax *= (1 - flat*0.5);
-    fricNow = FRIC + flat*16;
+    accel *= (1 - flat*0.6);
+    capMax *= (1 - flat*0.55);
+    fricNow = FRIC + flat*18;
   }
-  // desgaste / dano do veículo (sistema completo)
   const vDmg = getVehicleDamage(player);
-  // 0% dano = 100% performance; 100% dano = ~25% aceleração
-  const dmgMul = 1 - Math.min(0.75, vDmg * 0.75);
+  const dmgMul = 1 - Math.min(0.78, vDmg * 0.78);
   try{ updateVehicleDamageFX(dt); }catch(e){}
   if(Math.random()<0.02) try{ updateVehHpUI(); }catch(e){}
-  const wetMul = (typeof wetAmount!=='undefined' && wetAmount>0.3) ? (1 - wetAmount*0.12) : 1;
+
+  // superfície: chuva / asfalto molhado
+  const wet = (typeof wetAmount!=='undefined') ? wetAmount : 0;
+  const wetMul = wet>0.15 ? (1 - wet*0.22) : 1;
+  const gripMul = phys.grip * wetMul * (1 - (typeof tireFlat==='number'?tireFlat*0.4:0));
+
+  // curva de torque: mais força em baixa, cai perto do limite
+  const spdAbs = Math.abs(player.speed);
+  const ratio = clamp(spdAbs / Math.max(1, capMax), 0, 1);
+  const torqueCurve = 1.15 - ratio * 0.55; // forte no começo
+  const massMul = 1 / Math.max(0.45, phys.mass);
+
   {
-    // aceleração/freio mais lisos (sem tranco)
     let targetSpd = player.speed;
     if(keys.up){
       if(typeof ECON!=='undefined' && ECON.fuel<=0){
         if(Math.random()<0.015) showToast('⛽ Sem combustível — vá ao posto');
-        targetSpd *= 0.97;
+        targetSpd *= 0.96;
       } else {
-        targetSpd = player.speed + accel * dmgMul * wetMul * dt * 1.05;
+        targetSpd = player.speed + accel * dmgMul * wetMul * torqueCurve * massMul * dt;
       }
     } else if(keys.down){
-      targetSpd = player.speed - BRAKEA * (0.85 + dmgMul*0.15) * dt;
+      // freio + motor-brake
+      const brakePower = BRAKEA * (0.9 + dmgMul*0.2) * (keys.up ? 0.7 : 1.15);
+      targetSpd = player.speed - brakePower * massMul * dt * Math.sign(player.speed || 1);
+      // freio de mão leve: se freio + direção forte, corta velocidade lateral (feito no grip)
     } else {
-      const coast = fricNow * 1.15 + Math.abs(player.speed)*0.28;
-      if(player.speed>0.25) targetSpd = player.speed - coast*dt;
-      else if(player.speed<-0.25) targetSpd = player.speed + coast*dt;
+      // arrasto aerodinâmico + atrito
+      const drag = fricNow * 0.9 + spdAbs * spdAbs * phys.drag;
+      if(player.speed>0.2) targetSpd = player.speed - drag*dt;
+      else if(player.speed<-0.2) targetSpd = player.speed + drag*dt;
       else targetSpd = 0;
     }
     const sm = getDriveSmooth();
-    player.speed += (targetSpd - player.speed) * Math.min(1, dt * (18 * sm));
+    // resposta mais viva no começo do pedal
+    const response = 14 * sm * (keys.up || keys.down ? 1.15 : 0.9);
+    player.speed += (targetSpd - player.speed) * Math.min(1, dt * response);
   }
-  if(!keys.up && !keys.down && Math.abs(player.speed) < 0.28) player.speed = 0;
+  if(!keys.up && !keys.down && Math.abs(player.speed) < 0.22) player.speed = 0;
   if(!isFinite(player.speed)) player.speed = 0;
-  player.speed = clamp(player.speed, MAXR, capMax);
-  // som do motor sobe com aceleração (estilo vídeo)
+  player.speed = clamp(player.speed, MAXR * (phys.isBike?0.7:1), capMax);
+
   if(!onFoot) updateEngineSound(!!keys.up, player.speed);
   else updateEngineSound(false, 0);
 
-  const turnEff = clamp(Math.abs(player.speed)/8, 0.22, 1);
+  // direção: velocidade angular com sub-viragem / sobre-viragem
+  const turnEff = clamp(Math.abs(player.speed)/7.5, 0.18, 1);
   const dirSign = player.speed>=0?1:-1;
-  // direção mais lisa (Porsche / esportivos)
-  const carT = CAR_TYPES[selectedCarKey] || {};
   const smooth = getDriveSmooth();
   let steerInput = 0;
   if(keys.left) steerInput -= 1;
   if(keys.right) steerInput += 1;
   if(player._steerVel === undefined) player._steerVel = 0;
-  const steerTarget = steerInput * TURN * turnEff * dirSign;
-  // suaviza entrada do volante
-  player._steerVel += (steerTarget - player._steerVel) * Math.min(1, dt * (9 * smooth));
+  // menos giro em alta (estabilidade), mais em baixa
+  const highSpeedStab = 1 - clamp(spdAbs/capMax, 0, 1) * 0.35;
+  const steerTarget = steerInput * TURN * turnEff * dirSign * highSpeedStab;
+  player._steerVel += (steerTarget - player._steerVel) * Math.min(1, dt * (10 * smooth));
   player.angle += player._steerVel * dt;
-  // amortece residual
-  if(!steerInput) player._steerVel *= Math.max(0, 1 - dt * (7 * smooth));
+  if(!steerInput) player._steerVel *= Math.max(0, 1 - dt * (8 * smooth));
 
-
+  // vetor de movimento com derrapagem (slip)
   if(player.moveAngle===undefined) player.moveAngle = player.angle;
-  let angDiff = player.angle-player.moveAngle;
-  while(angDiff>Math.PI) angDiff-=TAU; while(angDiff<-Math.PI) angDiff+=TAU;
-  const speedFrac = clamp(Math.abs(player.speed)/MAXS, 0, 1);
+  let angDiff = player.angle - player.moveAngle;
+  while(angDiff>Math.PI) angDiff-=Math.PI*2;
+  while(angDiff<-Math.PI) angDiff+=Math.PI*2;
+
+  const speedFrac = clamp(spdAbs/Math.max(8, MAXS*0.5), 0, 1);
   const turning = keys.left||keys.right;
-  // mais grip = menos derrapada seca / sensação lisa
-  const grip = turning ? (4.8 - speedFrac*2.0) : 14;
+  const braking = keys.down && !keys.up;
+  // grip base: alta = menos aderência lateral; chuva derrapa
+  let grip = turning ? (5.2 - speedFrac*2.4) : (15 * gripMul);
+  grip *= gripMul;
+  if(braking && turning) grip *= 0.55; // freio + curva = drift
+  if(wet > 0.4) grip *= 0.7;
+  if(boosting) grip *= 0.85;
+  if(phys.isBike) grip *= 1.05;
+
   const smG = getDriveSmooth();
   player.moveAngle += clamp(angDiff, -grip*dt*smG, grip*dt*smG);
 
-  player.x += Math.cos(player.moveAngle)*player.speed*dt;
-  player.z += Math.sin(player.moveAngle)*player.speed*dt;
+  // impulso lateral residual (sensação de peso)
+  if(player._lat === undefined) player._lat = 0;
+  const slip = angDiff;
+  player._lat += (-Math.sin(slip) * spdAbs * 0.15 - player._lat) * Math.min(1, dt * 6);
+  player._lat *= Math.max(0, 1 - dt * (4 + gripMul*3));
+
+  const fx = Math.cos(player.moveAngle), fz = Math.sin(player.moveAngle);
+  const lx = Math.cos(player.moveAngle + Math.PI/2), lz = Math.sin(player.moveAngle + Math.PI/2);
+  player.x += (fx * player.speed + lx * player._lat * 0.35) * dt;
+  player.z += (fz * player.speed + lz * player._lat * 0.35) * dt;
   player.x = clamp(player.x,-6,WORLD+6);
   player.z = clamp(player.z,-6,WORLD+40);
   maybeSkid();
   player.group.position.set(player.x, 0, player.z);
-  // rotação mais lisa (evita tranco no volante)
   {
     let targetY = -player.angle;
     let cur = player.group.rotation.y;
@@ -15168,7 +15480,7 @@ function updatePlayer(dt){
     while(dy > Math.PI) dy -= Math.PI*2;
     while(dy < -Math.PI) dy += Math.PI*2;
     const sm = getDriveSmooth();
-    player.group.rotation.y = cur + dy * Math.min(1, dt * (16 * sm));
+    player.group.rotation.y = cur + dy * Math.min(1, dt * (14 * sm));
   }
 
   updatePlayerCarPhysics(dt);
@@ -15195,30 +15507,32 @@ function updatePlayerCarPhysics(dt){
   const isBikeUd = !!ud.isBike;
   // GRAU = roda DA FRENTE no ar (eixo traseiro no chão)
   let wheelie = 0;
-  if(isBikeUd && !onFoot && Math.abs(player.speed) > 4){
-    const wantWheelie = keys.wheelie || (keys.down && keys.up) || (keys.down && Math.abs(player.speed)>14);
+  if(isBikeUd && !onFoot && Math.abs(player.speed) > 3){
+    const wantWheelie = keys.wheelie || (keys.down && keys.up);
     if(wantWheelie){
-      ud.wheelie = Math.min(1, (ud.wheelie||0) + dt * 2.2);
+      ud.wheelie = Math.min(1, (ud.wheelie||0) + dt * 2.8);
     } else {
-      ud.wheelie = Math.max(0, (ud.wheelie||0) - dt * 2.6);
+      ud.wheelie = Math.max(0, (ud.wheelie||0) - dt * 3.2);
     }
     wheelie = ud.wheelie || 0;
-    if(wheelie > 0.2){
-      // acelera um pouco no grau se estiver no gás
-      if(keys.up) player.speed += 2.5 * wheelie * dt;
-      player.speed *= (1 - 0.03*wheelie*dt);
+    if(wheelie > 0.15){
+      if(keys.up) player.speed += 3.2 * wheelie * dt;
+      // balance: perde velocidade se grau extremo
+      if(wheelie > 0.85) player.speed *= (1 - 0.08*dt);
     }
   } else {
-    ud.wheelie = 0;
+    ud.wheelie = Math.max(0, (ud.wheelie||0) - dt * 4);
   }
-  let targetPitch = clamp(-accel*0.0024, -0.07, 0.07);
+  // transferência de peso (aceleração/freio)
+  let targetPitch = clamp(-accel*0.0035, -0.11, 0.14);
+  if(keys.down && !keys.up) targetPitch += 0.06; // mergulho no freio
+  if(keys.up && !keys.down) targetPitch -= 0.03; // sobe nariz no gás
   if(isBikeUd){
-    // pitch NEGATIVO levanta a roda da frente (grau clássico)
-    targetPitch = clamp(targetPitch - wheelie * 0.92, -0.95, 0.12);
+    targetPitch = clamp(targetPitch - wheelie * 1.05, -1.05, 0.18);
   }
-  const speedFactor = Math.min(1, Math.abs(player.speed)/22);
-  const targetRoll = clamp(-ud.steer*speedFactor*(isBikeUd?1.25:0.55), isBikeUd?-0.32:-0.09, isBikeUd?0.32:0.09);
-  ud.pitch += (targetPitch-ud.pitch)*Math.min(1,dt*(isBikeUd?12:8));
+  const speedFactor = Math.min(1, Math.abs(player.speed)/20);
+  const targetRoll = clamp(-ud.steer*speedFactor*(isBikeUd?1.45:0.65), isBikeUd?-0.42:-0.12, isBikeUd?0.42:0.12);
+  ud.pitch += (targetPitch-ud.pitch)*Math.min(1,dt*(isBikeUd?14:9));
   ud.roll += (targetRoll-ud.roll)*Math.min(1,dt*9);
   // pivô no eixo TRASEIRO: desloca o bodyGroup para girar em torno da roda de trás
   if(isBikeUd && wheelie > 0.01){
@@ -15270,14 +15584,21 @@ function update(dt){
     updatePlayer(dt);
     const pud = player.group && player.group.userData;
     if(!(pud && pud.isHeli)) resolveBuilding(player,1.8,true);
-    // helicóptero: sobe com nitro, desce sozinho
+    // helicóptero: N/nitro ou GÁS sobe · FREIO desce · voa em qualquer direção
     if(pud && pud.isHeli){
       if(player.alt == null) player.alt = 0;
-      if(keys.nitro) player.alt = Math.min(28, player.alt + 12*dt);
-      else player.alt = Math.max(0, player.alt - 8*dt);
+      const climb = keys.nitro || (keys.up && Math.abs(player.speed)>2);
+      const descend = keys.down && !keys.nitro;
+      if(climb) player.alt = Math.min(32, player.alt + 14*dt);
+      else if(descend) player.alt = Math.max(0, player.alt - 16*dt);
+      else if(player.alt > 0.5) player.alt = Math.max(0.5, player.alt - 3*dt); // paira leve
+      else player.alt = 0;
       player.group.position.set(player.x, player.alt, player.z);
-      if(pud.rotor) pud.rotor.rotation.y += dt * (18 + Math.abs(player.speed)*0.3);
-      if(pud.rotor2) pud.rotor2.rotation.y += dt * (18 + Math.abs(player.speed)*0.3);
+      const spin = 12 + Math.abs(player.speed)*0.35 + (climb?10:0);
+      if(pud.rotor) pud.rotor.rotation.y += dt * spin;
+      if(pud.rotor2) pud.rotor2.rotation.y += dt * spin;
+      // sem colisão de prédio no ar
+      if(player.alt < 1.2){ try{ resolveBuilding(player,2.2,true); }catch(e){} }
     } else if(pud && pud.isBoat){
       player.alt = 0;
       player.group.position.set(player.x, 0.15, player.z);
@@ -16332,8 +16653,8 @@ function loop(t){
     // minimapa a cada 5 frames (performance)
     window.__mmFrame = (window.__mmFrame||0) + 1;
     if(state==='playing'||state==='start'){
-      const mmEvery = GFX.level==='high' ? 3 : 6;
-      if((window.__mmFrame % (mmEvery*2|0||6))===0) drawMinimap();
+      const mmEvery = GFX.level==='high' ? 5 : (GFX.level==='medium' ? 8 : 12);
+      if((window.__mmFrame % mmEvery)===0) drawMinimap();
       const bms = document.getElementById('bigMapScreen');
       if(bms && bms.classList.contains('show') && (window.__mmFrame % 15)===0){
         try{ drawBigMap(); }catch(e){}
@@ -16363,6 +16684,68 @@ try{
   };
   try{ if(window.parent && window.parent !== window) window.parent.__controlsTest = window.__controlsTest; }catch(e){}
 }catch(e){}
+
+/* ===== START v1.0.0 ===== */
+window.__cdcStart = function(){
+  try{
+    ['posterScreen','loadingScreen','introScreen','introCurtain','introVignette','introSheen','introEmbers','introRain','introFlash'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el){ el.style.display='none'; el.classList && el.classList.remove('show'); }
+    });
+  }catch(e){}
+  try{ if(typeof endIntro==='function'){ introDone=true; endIntro(); } }catch(e){}
+  try{ if(typeof initAudio==='function') initAudio(); }catch(e){}
+  try{
+    var key = (typeof selectedCarKey!=='undefined' && selectedCarKey) ? selectedCarKey : 'sedan';
+    if(typeof applyCarType==='function') applyCarType(key);
+  }catch(e){ console.warn(e); }
+  try{
+    var ch = (typeof getChar==='function') ? getChar() : {};
+    money = 300 + (ch.startMoney||0);
+    wanted = ch.startWanted||0;
+    if(typeof ECON!=='undefined'){
+      ECON.fuel=100; ECON.hunger=100; ECON.bank=0;
+      ECON.ownedCars = ECON.ownedCars||{};
+      ECON.ownedCars[selectedCarKey||'sedan']=true;
+    }
+    if(typeof syncMoneyUI==='function') syncMoneyUI();
+    if(typeof updateHPUI==='function'){ playerHP = maxHP||100; updateHPUI(); }
+  }catch(e){}
+  try{ var st=document.getElementById('startScreen'); if(st) st.style.display='none'; }catch(e){}
+  try{ var ld=document.getElementById('loadingScreen'); if(ld) ld.style.display='none'; }catch(e){}
+  state = 'playing';
+  try{
+    ['hud','controls','minimapWrap','speedWrap','topCenter'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.style.opacity='1';
+    });
+  }catch(e){}
+  try{ if(typeof showToast==='function') showToast('v1.0.0 · WASD dirige · N nitro · G grau'); }catch(e){}
+  console.log('CDC 1.0.0 started');
+};
+window.__cdcForceStart = window.__cdcStart;
+(function(){
+  function bind(){
+    var btn=document.getElementById('startBtn');
+    if(btn && !btn.__v100){
+      btn.__v100=true;
+      btn.addEventListener('click', function(e){ e.preventDefault(); window.__cdcStart(); }, true);
+      btn.addEventListener('touchend', function(e){ e.preventDefault(); window.__cdcStart(); }, {passive:false});
+    }
+  }
+  bind();
+  setTimeout(bind, 400);
+  setTimeout(bind, 1200);
+  // libera menu rápido
+  setTimeout(function(){
+    try{
+      var ps=document.getElementById('posterScreen'); if(ps) ps.style.display='none';
+      var ld=document.getElementById('loadingScreen'); if(ld) ld.style.display='none';
+      var intro=document.getElementById('introScreen'); if(intro){ intro.style.display='none'; intro.classList.remove('show'); }
+      var st=document.getElementById('startScreen'); if(st) st.style.display='flex';
+      if(typeof state!=='undefined' && state!=='playing') state='start';
+    }catch(e){}
+  }, 600);
+})();
 
 })();
 </script>
